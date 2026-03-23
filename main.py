@@ -1,20 +1,38 @@
-import asyncio
-from converters import *
+from converters import (
+    UsdRubConverter,
+    UsdEurConverter,
+    UsdGbpConverter,
+    UsdCnyConverter,
+)
 
-def main():    
-    amount = int(input('Введите значение в USD: \n'))
-    
-    converter = UsdRubConverter()
-    print(f"{amount} USD to RUB: {converter.convert_usd_to_rub(amount)}")
-    
-    converter = UsdEurConverter()
-    print(f"{amount} USD to EUR: {converter.convert_usd_to_eur(amount)}")
-    
-    converter = UsdGbpConverter()
-    print(f"{amount} USD to GBP: {converter.convert_usd_to_gbp(amount)}")
-    
-    converter = UsdCnyConverter()
-    print(f"{amount} USD to CNY: {converter.convert_usd_to_cny(amount)}")
+
+def main():
+    # убрала import и лишний asyncio. Т к явные импорты проще читать
+    # + добавила простую обработку ошибки ввода.
+    # теперь если ввести текст вместо числа, программа не падает с трассировкой, а пишет понятное сообщение
+    try:
+        amount = float(input("Введите значение в USD:\n"))
+    except ValueError:
+        print("Ошибка: нужно ввести число, например 10 или 10.5")
+        return
+
+    # сделала простой список конвертеров и единый вызов convert().
+    # Чтобы код стал короче, чтобы было легче добавлять новые валюты.
+    converters = [
+        ("RUB", UsdRubConverter()),
+        ("EUR", UsdEurConverter()),
+        ("GBP", UsdGbpConverter()),
+        ("CNY", UsdCnyConverter()),
+    ]
+
+    # добавила общий try/except на этап конвертации.
+    # если API недоступен или курс не найден, пользователь увидит короткое понятное сообщение
+    try:
+        for code, converter in converters:
+            print(f"{amount} USD to {code}: {converter.convert(amount)}")
+    except Exception as error:
+        print(f"Ошибка при конвертации: {error}")
+
 
 if __name__ == "__main__":
     main()

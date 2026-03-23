@@ -1,23 +1,15 @@
-import requests
 from converters import CurrencyConverter
 
+
+"""убрала отдельный кэш и сложную ветку логики, оставила простой вариант (YAGNI), по аналогии сделаны все 4 конвертера. 
+    класс теперь только задает целевую валюту (одну из 4-х)
+    вся общая логика уже в базовом классе, поэтому здесь не нужен дублирующий код
+    класс теперь минимальный и хранит только свою валюту 
+    это проще читать и легче поддерживать, чем 4 лишних метода в каждом классе
+    дублирование кода убрано, теперь все конвертеры работают одинаково и проще"""
+
+
 class UsdRubConverter(CurrencyConverter):
+
     def __init__(self):
-        self.rates = self.get_rates()
-
-    def get_rates(self):
-        response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
-        data = response.json()
-        return data['rates']
-    
-    def convert_usd_to_eur(self, amount):
-        print('This is not USD to EUR converter')
-
-    def convert_usd_to_gbp(self, amount):
-        print('This is not USD to GBP converter')
-
-    def convert_usd_to_rub(self, amount):
-        return amount * self.rates['RUB']
-
-    def convert_usd_to_cny(self, amount):
-        print('This is not USD to CNY converter')
+        super().__init__(target_currency="RUB")
